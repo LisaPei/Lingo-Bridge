@@ -8,8 +8,44 @@
 
 import UIKit
 import Messages
+import ROGoogleTranslate
 
 class MessagesViewController: MSMessagesAppViewController {
+    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var inputField: UITextField!
+    @IBAction func button(_ sender: Any) {
+        
+        
+        let name: String = inputField.text!
+        
+        let translator = ROGoogleTranslate()
+        translator.apiKey = "AIzaSyBNq7PS6VdaaO3VLgbLddxZQcARCcqbwzY"
+        
+        var params = ROGoogleTranslateParams()
+        params.source =  "en"
+        params.target =  "de"
+        params.text = name
+        
+        translator.translate(params: params) { (result) in
+            DispatchQueue.main.async {
+                self.label.text = "\(result)"
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let t_result: String = self.label.text!
+            print(t_result)
+            
+            let layout = MSMessageTemplateLayout()
+            layout.caption = t_result
+            
+            let message = MSMessage()
+            message.layout = layout
+            
+            self.activeConversation?.insert(message, completionHandler: nil)
+        }
+        //Apperance of message
+        
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
